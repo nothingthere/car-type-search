@@ -1,7 +1,7 @@
 # Author: Claudio <3261958605@qq.com>
 # Created: 2017-05-17 11:57:39
 # Commentary:
-#+TITLE: 收费系统二类车查找程序
+#+TITLE: 收费站车型查找模拟程序
 
 #+BEGIN_QUOTE
 VERSION 0.1
