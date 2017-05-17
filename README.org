@@ -1,0 +1,15 @@
+# Author: Claudio <3261958605@qq.com>
+# Created: 2017-05-17 11:57:39
+# Commentary:
+#+TITLE: 收费系统二类车查找程序
+
+#+BEGIN_QUOTE
+VERSION 0.1
+#+END_QUOTE
+
+* 查找机制
+  使用本地和远端两个数据库，接口相同。
+  
+  先在本地查找，如果没找到，再到远端查找。
+  
+  如果在远端找到，存储到本地。
