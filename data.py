@@ -6,7 +6,9 @@
 数据处理文件。
 数据库中车牌信息存储格式：{'name':'车牌','typo':[0-50]}
 '''
+
 import functools
+import itertools
 import random
 import sqlite3
 import string
@@ -29,7 +31,6 @@ def create(db, table):
     con.close()
 
 
-@functools.lru_cache(maxsize=128)
 def search(db, table, name):
     '在数据库中查询车牌为NAME的项目。'
     conn = sqlite3.connect(db)
@@ -72,27 +73,50 @@ def update_local(lsts):
     conn.close()
 
 
+def random_data_item():
+    '生成随机数据条目：(车牌, 座位数)。'
+    name = ''
+    name = random.choice(PROVICE_ABBREVS)
+    name += random.choice(string.ascii_uppercase)
+    for j in range(5):
+        name += random.choice(string.digits + string.ascii_uppercase)
+
+    typo = random.randrange(2, 50)
+    return name, typo
+
+
 def build_fake_datebase(db=REMOTE_DB, table=TABLE, num=10000):
     '创建模拟远程数据库。'
-    name = ''
     for i in range(num):
-        name = random.choice(PROVICE_ABBREVS)
-        name += random.choice(string.ascii_uppercase)
-        for j in range(5):
-            name += random.choice(string.digits + string.ascii_uppercase)
+        update(db, table, *random_data_item())
 
-        typo = random.randrange(2, 50)
 
-        update(db, table, name, typo)
+def all_possible_plates():
+    """返回所有可能车牌号组成的iterator。
+
+    所有可能个数为：3 * 26 * (10 + 26)**5
+
+    好像没多大意义，计算量太大。
+    """
+
+    head_raw = itertools.product(PROVICE_ABBREVS, string.ascii_uppercase)
+    head = itertools.starmap(lambda x, y: x + y, head_raw)
+    # print(list(head))
+
+    tail_raw = itertools.product('abc', string.digits +
+                                 string.ascii_uppercase, repeat=5)
+    tail = map(lambda t: functools.reduce(lambda x, y: x + y, t), tail_raw)
+    # for i in range(11):
+    # print(next(tail))
+
+    result_raw = itertools.product(head, tail)
+    result = itertools.starmap(lambda x, y: x + y, result_raw)
+
+    # for i in range(10):
+    # print(next(result))
+
+    return result
 
 
 if __name__ == '__main__':
-    # for db in LOCAL_DB, REMOTE_DB:
-    #     create(db, TABLE)
-    # create(LOCAL_DB, TABLE)
-    # print(random.choice('abbrevs'))
-    # build_fake_datebase()
-    # update(REMOTE_DB, TABLE, '川A6882Q', 19)
-    # update(REMOTE_DB, TABLE, '川A6926Q', 29)
-    # update_local(search_remote('川A6882Q'))
-    print(search_all(LOCAL_DB, TABLE))
+    pass
